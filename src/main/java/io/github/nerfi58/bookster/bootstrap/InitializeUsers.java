@@ -1,0 +1,74 @@
+package io.github.nerfi58.bookster.bootstrap;
+
+import io.github.nerfi58.bookster.entities.Role;
+import io.github.nerfi58.bookster.entities.User;
+import io.github.nerfi58.bookster.entities.enums.RoleEnum;
+import io.github.nerfi58.bookster.repositories.RoleRepository;
+import io.github.nerfi58.bookster.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.util.Date;
+import java.util.Set;
+
+@Component
+public class InitializeUsers implements CommandLineRunner {
+
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public InitializeUsers(UserRepository userRepository, RoleRepository roleRepository,
+                           PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Override
+    public void run(String... args) {
+
+        Clock clock = Clock.systemUTC();
+
+        Role adminRole = new Role();
+        adminRole.setRole(RoleEnum.ADMIN);
+
+        Role moderatorRole = new Role();
+        moderatorRole.setRole(RoleEnum.MODERATOR);
+
+        Role userRole = new Role();
+        userRole.setRole(RoleEnum.USER);
+
+        Role savedAdminRole = roleRepository.save(adminRole);
+        Role savedUserRole = roleRepository.save(userRole);
+        Role savedModeratorRole = roleRepository.save(moderatorRole);
+
+        User user = new User();
+        user.setUsername("user");
+        user.setPasshash(passwordEncoder.encode("user"));
+        user.setCreated(Date.from(Instant.now(clock)));
+        user.setActive(true);
+        user.setRoles(Set.of(userRole));
+
+        User admin = new User();
+        admin.setUsername("admin");
+        admin.setPasshash(passwordEncoder.encode("admin"));
+        admin.setCreated(Date.from(Instant.now(clock)));
+        admin.setActive(true);
+        admin.setRoles(Set.of(adminRole, userRole, moderatorRole));
+
+        User savedUser = userRepository.save(user);
+        User savedAdmin = userRepository.save(admin);
+
+        System.out.println(savedAdmin); //to działa dobrze
+
+        User adminFromRepository = userRepository.findByUsername("admin").orElseThrow(EntityNotFoundException::new);
+        System.out.println(adminFromRepository); //to już nie
+    }
+}
