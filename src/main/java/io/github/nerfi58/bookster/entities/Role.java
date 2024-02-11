@@ -2,14 +2,18 @@ package io.github.nerfi58.bookster.entities;
 
 import io.github.nerfi58.bookster.entities.enums.RoleEnum;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "role")
-@Data
+@Getter
+@Setter
+@ToString
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "role_id_gen")
@@ -21,6 +25,7 @@ public class Role {
     @Enumerated(EnumType.STRING)
     private RoleEnum role;
 
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
+    @ToString.Exclude
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
     private Set<User> users = new HashSet<>();
 }

@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Service
 public class UserDetailsJpaService implements UserDetailsService {
-    
+
     private final UserRepository userRepository;
 
     @Autowired
@@ -22,12 +22,10 @@ public class UserDetailsJpaService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-    @Override
     @Transactional
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println("username");
-        Optional<User> user = userRepository.findByUsername(username);
-        System.out.println(user.toString());
-        return UserMapper.userToUserDetails(user.orElseThrow(() -> new UsernameNotFoundException("Username not found")));
+        Optional<User> user = userRepository.findUserByUsername(username);
+        return UserMapper.userToUserDetails(user.orElseThrow(() -> new UsernameNotFoundException(username)));
     }
 }

@@ -1,20 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"
+            integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
+            crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
 </head>
 <body>
-<form th:action="@{/login}" method="POST">
-    <div th:if="${param.error}">
-        Invalid username or password
-    </div>
-    <div th:if="${param.logout}">
-        You have been succesfully logout
-    </div>
-    <input type="text" name="username" placeholder="Username">
-    <input type="password" name="password" placeholder="Password">
-    <input type="submit" value="Log in">
-</form>
+<div id="login-form">
+    <form th:action="@{/login}" method="POST">
+        <div th:if="${param.badCredentials}">
+            Invalid username or password
+        </div>
+        <div th:if="${param.notActivated}">
+            Account not activated
+        </div>
+        <input type="text" name="username" placeholder="Username">
+        <input type="password" name="password" placeholder="Password">
+        <input type="submit" value="Log in">
+    </form>
+</div>
+<button class="register-button" th:hx-get="|@{/register}|" hx-target="#login-form" hx-trigger="click once"
+        th:_="|on click remove me|">
+    Register
+</button>
 </body>
 </html>

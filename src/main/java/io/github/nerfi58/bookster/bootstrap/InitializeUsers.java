@@ -8,6 +8,7 @@ import io.github.nerfi58.bookster.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,7 @@ import java.util.Date;
 import java.util.Set;
 
 @Component
+@Order(2)
 public class InitializeUsers implements CommandLineRunner {
 
     private final UserRepository userRepository;
@@ -36,18 +38,9 @@ public class InitializeUsers implements CommandLineRunner {
 
         Clock clock = Clock.systemUTC();
 
-        Role adminRole = new Role();
-        adminRole.setRole(RoleEnum.ADMIN);
-
-        Role moderatorRole = new Role();
-        moderatorRole.setRole(RoleEnum.MODERATOR);
-
-        Role userRole = new Role();
-        userRole.setRole(RoleEnum.USER);
-
-        Role savedAdminRole = roleRepository.save(adminRole);
-        Role savedUserRole = roleRepository.save(userRole);
-        Role savedModeratorRole = roleRepository.save(moderatorRole);
+        Role userRole = roleRepository.findByRole(RoleEnum.USER).orElseThrow(EntityNotFoundException::new);
+        Role moderaratorRole = roleRepository.findByRole(RoleEnum.MODERATOR).orElseThrow(EntityNotFoundException::new);
+        Role adminRole = roleRepository.findByRole(RoleEnum.ADMIN).orElseThrow(EntityNotFoundException::new);
 
         User user = new User();
         user.setUsername("user");
@@ -55,20 +48,22 @@ public class InitializeUsers implements CommandLineRunner {
         user.setCreated(Date.from(Instant.now(clock)));
         user.setActive(true);
         user.setRoles(Set.of(userRole));
+        userRepository.save(user);
+
+        User moderator = new User();
+        moderator.setUsername("moderator");
+        moderator.setPasshash(passwordEncoder.encode("moderator"));
+        moderator.setCreated(Date.from(Instant.now(clock)));
+        moderator.setActive(true);
+        moderator.setRoles(Set.of(userRole, moderaratorRole));
+        userRepository.save(moderator);
 
         User admin = new User();
         admin.setUsername("admin");
         admin.setPasshash(passwordEncoder.encode("admin"));
         admin.setCreated(Date.from(Instant.now(clock)));
         admin.setActive(true);
-        admin.setRoles(Set.of(adminRole, userRole, moderatorRole));
-
-        User savedUser = userRepository.save(user);
-        User savedAdmin = userRepository.save(admin);
-
-        System.out.println(savedAdmin); //to działa dobrze
-
-        User adminFromRepository = userRepository.findByUsername("admin").orElseThrow(EntityNotFoundException::new);
-        System.out.println(adminFromRepository); //to już nie
+        admin.setRoles(Set.of(userRole, moderaratorRole, adminRole));
+        userRepository.save(admin);
     }
 }

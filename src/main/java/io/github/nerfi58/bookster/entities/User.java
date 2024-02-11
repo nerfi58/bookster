@@ -1,7 +1,9 @@
 package io.github.nerfi58.bookster.entities;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -9,7 +11,9 @@ import java.util.Set;
 
 @Entity
 @Table(name = "\"user\"")
-@Data
+@Getter
+@Setter
+@ToString
 public class User {
 
     @Id
@@ -30,11 +34,11 @@ public class User {
     @Column(name = "active", nullable = false, columnDefinition = "BOOLEAN")
     private boolean active;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
     )
     private Set<Role> roles = new HashSet<>();
 }
