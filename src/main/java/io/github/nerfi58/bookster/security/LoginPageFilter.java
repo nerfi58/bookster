@@ -15,12 +15,12 @@ public class LoginPageFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        if (request.getRequestURI().equals("/login")
+        if ((request.getRequestURI().equals("/login") || request.getRequestURI().equals("/register"))
             && SecurityContextHolder.getContext().getAuthentication() != null
             && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
             response.sendRedirect("/");
         }
-        
+
         filterChain.doFilter(request, response);
     }
 }

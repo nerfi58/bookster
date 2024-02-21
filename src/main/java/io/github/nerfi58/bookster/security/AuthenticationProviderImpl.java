@@ -29,7 +29,7 @@ public class AuthenticationProviderImpl implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         try {
             String passwordEnteredByUser = authentication.getCredentials().toString();
-            UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
+            UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName().toLowerCase());
 
             if (!passwordEncoder.matches(passwordEnteredByUser, userDetails.getPassword())) {
                 throw new BadCredentialsException("Bad credentials");

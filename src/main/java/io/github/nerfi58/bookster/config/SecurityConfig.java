@@ -19,29 +19,32 @@ public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
 
     @Autowired
-    public SecurityConfig(AuthenticationProvider authenticationProvider,
-                          AuthenticationFailureHandler authenticationFailureHandler) {
-        this.authenticationProvider = authenticationProvider;
+    public SecurityConfig(AuthenticationFailureHandler authenticationFailureHandler,
+                          AuthenticationProvider authenticationProvider) {
         this.authenticationFailureHandler = authenticationFailureHandler;
+        this.authenticationProvider = authenticationProvider;
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/register").permitAll()
                         .requestMatchers("/login").permitAll()
+                        .requestMatchers("/register").permitAll()
+                        .requestMatchers("/user/register").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
                         .failureHandler(authenticationFailureHandler)
+                        .defaultSuccessUrl("/", true)
 
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login")
                 )
+                .authenticationProvider(authenticationProvider)
                 .addFilterBefore(new LoginPageFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

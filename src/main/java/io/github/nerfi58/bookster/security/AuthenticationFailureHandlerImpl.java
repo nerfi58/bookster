@@ -29,6 +29,6 @@ public class AuthenticationFailureHandlerImpl implements AuthenticationFailureHa
             setRedirectUrl("/login?notActivated");
         }
 
-        this.redirectStrategy.sendRedirect(request, response, redirectUrl);
+        redirectStrategy.sendRedirect(request, response, redirectUrl);
     }
 }

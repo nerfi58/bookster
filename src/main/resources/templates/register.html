@@ -3,13 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
     <link rel="stylesheet" th:href="@{/css/register.css}">
 </head>
 <body>
-<form th:action="@{/register}" method="POST">
-    <input type="text" name="username" placeholder="CHUJ">
-    <input type="password" name="password" placeholder="Password">
-    <input type="submit" value="Log in">
+<form th:hx-post="|@{/user/register}|" hx-ext="json-enc" th:hx-headers='|{"X-CSRF-TOKEN": "${_csrf.token}"}|'>
+    <label for="username">Username</label>
+    <input type="text" id="username" name="username" placeholder="Username" required minlength="5" maxlength="32">
+    <input type="email" id="email" name="email" placeholder="email@domain.com" required>
+    <input type="password" id="password" name="rawPassword" placeholder="Password" required minlength="8"
+           _="on keyup if me.value is not #repeat-password.value set $passwordsNotTheSame to true else set $passwordsNotTheSame to false">
+    <input type="password" id="repeat-password" name="repeat-password" placeholder="Repeat password" required
+           minlength="8"
+           _="on keyup if me.value is not #password.value set $passwordsNotTheSame to true else set $passwordsNotTheSame to false">
+    <span _="on keyup from #password or keyup from #repeat-password if #password.value.length < 8 or #repeat-password.value.length < 8 or $passwordsNotTheSame is false add @hidden then remove @disabled from #register-button else remove @hidden then add @disabled to #register-button"
+          hidden>
+        PASSWORDS ARE NOT THE SAME!
+    </span>
+    <input type="submit" id="register-button" value="Register" disabled>
 </form>
 </body>
 </html>

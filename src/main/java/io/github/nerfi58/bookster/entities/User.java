@@ -28,6 +28,9 @@ public class User {
     @Column(name = "passhash", nullable = false, columnDefinition = "VARCHAR(60)")
     private String passhash;
 
+    @Column(name = "email", nullable = false, columnDefinition = "VARCHAR(72)")
+    private String email;
+
     @Column(name = "created", nullable = false, updatable = false, columnDefinition = "DATE")
     private Date created;
 

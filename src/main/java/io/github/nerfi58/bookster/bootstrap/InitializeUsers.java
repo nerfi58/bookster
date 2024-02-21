@@ -25,6 +25,8 @@ public class InitializeUsers implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
+    private final Clock clock = Clock.systemUTC();
+
     @Autowired
     public InitializeUsers(UserRepository userRepository, RoleRepository roleRepository,
                            PasswordEncoder passwordEncoder) {
@@ -36,8 +38,6 @@ public class InitializeUsers implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        Clock clock = Clock.systemUTC();
-
         Role userRole = roleRepository.findByRole(RoleEnum.USER).orElseThrow(EntityNotFoundException::new);
         Role moderaratorRole = roleRepository.findByRole(RoleEnum.MODERATOR).orElseThrow(EntityNotFoundException::new);
         Role adminRole = roleRepository.findByRole(RoleEnum.ADMIN).orElseThrow(EntityNotFoundException::new);
@@ -45,6 +45,7 @@ public class InitializeUsers implements CommandLineRunner {
         User user = new User();
         user.setUsername("user");
         user.setPasshash(passwordEncoder.encode("user"));
+        user.setEmail("user@bookster.com");
         user.setCreated(Date.from(Instant.now(clock)));
         user.setActive(true);
         user.setRoles(Set.of(userRole));
@@ -53,6 +54,7 @@ public class InitializeUsers implements CommandLineRunner {
         User moderator = new User();
         moderator.setUsername("moderator");
         moderator.setPasshash(passwordEncoder.encode("moderator"));
+        moderator.setEmail("moderator@bookster.com");
         moderator.setCreated(Date.from(Instant.now(clock)));
         moderator.setActive(true);
         moderator.setRoles(Set.of(userRole, moderaratorRole));
@@ -61,6 +63,7 @@ public class InitializeUsers implements CommandLineRunner {
         User admin = new User();
         admin.setUsername("admin");
         admin.setPasshash(passwordEncoder.encode("admin"));
+        admin.setEmail("admin@bookster.com");
         admin.setCreated(Date.from(Instant.now(clock)));
         admin.setActive(true);
         admin.setRoles(Set.of(userRole, moderaratorRole, adminRole));
