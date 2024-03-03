@@ -1,4 +1,4 @@
-package io.github.nerfi58.bookster.security.exceptions;
+package io.github.nerfi58.bookster.exceptions;
 
 import org.springframework.security.core.AuthenticationException;
 

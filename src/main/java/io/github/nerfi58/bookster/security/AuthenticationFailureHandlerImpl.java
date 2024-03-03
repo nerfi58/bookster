@@ -1,6 +1,6 @@
 package io.github.nerfi58.bookster.security;
 
-import io.github.nerfi58.bookster.security.exceptions.AccountNotActivatedException;
+import io.github.nerfi58.bookster.exceptions.AccountNotActivatedException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Setter;

@@ -2,25 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
-    <link rel="stylesheet" th:href="@{/css/register.css}">
+    <title>Bookster | Register</title>
+    <script th:src="@{js/htmx.min.js}"></script>
+    <script th:src="@{js/htmx-json-enc.js}"></script>
+    <script th:src="@{js/hyperscript.min.js}"></script>
+    <link rel="stylesheet" th:href="@{css/register-login.css}">
 </head>
 <body>
-<form th:hx-post="|@{/user/register}|" hx-ext="json-enc" th:hx-headers='|{"X-CSRF-TOKEN": "${_csrf.token}"}|'>
-    <label for="username">Username</label>
-    <input type="text" id="username" name="username" placeholder="Username" required minlength="5" maxlength="32">
-    <input type="email" id="email" name="email" placeholder="email@domain.com" required>
-    <input type="password" id="password" name="rawPassword" placeholder="Password" required minlength="8"
-           _="on keyup if me.value is not #repeat-password.value set $passwordsNotTheSame to true else set $passwordsNotTheSame to false">
-    <input type="password" id="repeat-password" name="repeat-password" placeholder="Repeat password" required
-           minlength="8"
-           _="on keyup if me.value is not #password.value set $passwordsNotTheSame to true else set $passwordsNotTheSame to false">
-    <span _="on keyup from #password or keyup from #repeat-password if #password.value.length < 8 or #repeat-password.value.length < 8 or $passwordsNotTheSame is false add @hidden then remove @disabled from #register-button else remove @hidden then add @disabled to #register-button"
-          hidden>
-        PASSWORDS ARE NOT THE SAME!
-    </span>
-    <input type="submit" id="register-button" value="Register" disabled>
-</form>
+<div id="register-form-container">
+    <form th:hx-post="|@{/user/register}|" hx-ext="json-enc" th:hx-headers='|{"X-CSRF-TOKEN": "${_csrf.token}"}|'
+          id="register-form">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="user" required minlength="5" maxlength="32">
+        <label for="email">Email address</label>
+        <input type="email" id="email" name="email" placeholder="email@example.com" required>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="rawPassword" placeholder="password" required minlength="8"
+               _="on keyup if me.value is not #repeat-password.value set $passwordsNotTheSame to true else set $passwordsNotTheSame to false">
+        <label for="repeat-password">Repeat password</label>
+        <input type="password" id="repeat-password" name="repeat-password" placeholder="password" required
+               minlength="8"
+               _="on keyup if me.value is not #password.value set $passwordsNotTheSame to true else set $passwordsNotTheSame to false">
+        <span _="on keyup from #password or keyup from #repeat-password if #password.value.length < 8 or #repeat-password.value.length < 8 or $passwordsNotTheSame is false add @hidden then remove @disabled from #register-button then remove .disabled from #register-button else remove @hidden then add @disabled to #register-button then add .disabled to #register-button"
+              hidden
+              class="form-info">
+        PASSWORDS ARE NOT THE SAME</span>
+        <input type="submit" id="register-button" value="Register" disabled class="disabled">
+    </form>
+</div>
+<div class="register-login-box">
+    <p>Already have an account?</p>
+    <a th:href="@{/login}" class="register-login-button">Login here</a>
+</div>
 </body>
 </html>

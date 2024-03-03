@@ -1,6 +1,6 @@
 package io.github.nerfi58.bookster.security;
 
-import io.github.nerfi58.bookster.security.exceptions.AccountNotActivatedException;
+import io.github.nerfi58.bookster.exceptions.AccountNotActivatedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;

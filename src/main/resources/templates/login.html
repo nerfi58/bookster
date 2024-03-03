@@ -2,32 +2,47 @@
 <html lang="en" xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-    <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
-    <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
+    <title>Bookster | Login</title>
+    <script th:src="@{js/htmx.min.js}"></script>
+    <script th:src="@{js/hyperscript.min.js}"></script>
+    <script th:src="@{js/htmx-json-enc.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/register-login.css}">
 </head>
 <body>
-<div id="login-form">
-    <form th:action="@{/login}" method="POST">
-        <div th:if="${param.badCredentials}">
-            Invalid username or password
-        </div>
-        <div th:if="${param.notActivated}">
-            Account not activated
-        </div>
-        <div th:if="${param.registerSuccessful}">
-            Your account has been created successfully. Activate your account with link sent to your email and login
-            here.
-        </div>
-        <input type="text" name="username" placeholder="Username">
-        <input type="password" name="password" placeholder="Password">
-        <input type="submit" value="Log in">
+<div id="login-form-container">
+    <form th:action="@{/login}" method="POST" id="login-form">
+        <label for="username">Username</label>
+        <input type="text" name="username" placeholder="user" id="username">
+        <label for="password">Password</label>
+        <input type="password" name="password" placeholder="password" id="password">
+        <input type="submit" value="Log in" id="input-submit">
     </form>
 </div>
-<button class="register-button" th:hx-get="|@{/register}|" hx-target="#login-form" hx-trigger="click once"
-        th:_="|on click remove me|">
-    Register
-</button>
+<div class="register-login-box">
+    <p>Don't have an account yet?</p>
+    <a th:href="@{/register}" class="register-login-button">Register here</a>
+</div>
+<div th:unless="${param.isEmpty()}" th:switch="${param.keySet()[0]}" id="message-info-box">
+    <div th:case="'notActivated'" class="message">
+        Your account has not been activated yet. Please check your email for more information.
+    </div>
+    <div th:case="'badCredentials'" class="message">
+        Invalid username or password. Please try again.
+    </div>
+    <div th:case="'registerSuccessful'" class="message">
+        Your account has been created successfully. Activate your account with link sent to
+        your email address.
+    </div>
+    <div th:case="'usernameAlreadyExists'" class="message">
+        Registration failed, this username already exists. Please try again with different username.
+    </div>
+    <div th:case="'emailAlreadyExists'" class="message">
+        Registration failed. This email is already used with another account. Please use different email address.
+    </div>
+    <div th:case="*" class="message">
+        Some weird unknown error happened. Please try again.
+    </div>
+    <button class="ok-button" _="on click add @hidden to #message-info-box">OK</button>
+</div>
 </body>
 </html>
