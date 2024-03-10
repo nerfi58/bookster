@@ -10,12 +10,13 @@ import io.github.nerfi58.bookster.mappers.UserMapper;
 import io.github.nerfi58.bookster.repositories.RoleRepository;
 import io.github.nerfi58.bookster.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ClockProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
-import java.time.Instant;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Service
@@ -24,16 +25,18 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final Clock clock;
 
-    private final Clock clock = Clock.systemUTC();
-
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+    @Autowired
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder,
+                       ClockProvider clockProvider) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.clock = clockProvider.getClock();
     }
 
-    public User saveUser(UserDto userDto) {
+    public UserDto saveUser(UserDto userDto) {
         userDto.setUsername(userDto.getUsername().toLowerCase());
         userDto.setEmail(userDto.getEmail().toLowerCase());
         userDto.setPasshash(passwordEncoder.encode(userDto.getRawPassword()));
@@ -50,8 +53,8 @@ public class UserService {
 
         User user = UserMapper.userDtoToUser(userDto);
         user.setRoles(Set.of(userRole));
-        user.setCreated(Date.from(Instant.now(clock)));
-
-        return userRepository.save(user);
+        user.setCreated(LocalDate.now(clock));
+        
+        return UserMapper.userToUserDto(userRepository.save(user));
     }
 }

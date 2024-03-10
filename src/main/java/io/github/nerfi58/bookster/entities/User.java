@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,7 +32,7 @@ public class User {
     private String email;
 
     @Column(name = "created", nullable = false, updatable = false, columnDefinition = "DATE")
-    private Date created;
+    private LocalDate created;
 
     @Column(name = "active", nullable = false, columnDefinition = "BOOLEAN")
     private boolean active;

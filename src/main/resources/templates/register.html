@@ -15,7 +15,7 @@
         <label for="username">Username</label>
         <input type="text" id="username" name="username" placeholder="user" required minlength="5" maxlength="32">
         <label for="email">Email address</label>
-        <input type="email" id="email" name="email" placeholder="email@example.com" required>
+        <input type="email" id="email" name="email" placeholder="email@example.com" maxlength="72" required>
         <label for="password">Password</label>
         <input type="password" id="password" name="rawPassword" placeholder="password" required minlength="8"
                _="on keyup if me.value is not #repeat-password.value set $passwordsNotTheSame to true else set $passwordsNotTheSame to false">

@@ -31,4 +31,14 @@ public class UserMapper {
 
         return user;
     }
+
+    public static UserDto userToUserDto(User user) {
+        return UserDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .created(user.getCreated())
+                .roles(user.getRoles().stream().map(e -> e.getRole().name()).toList())
+                .build();
+    }
 }

@@ -11,14 +11,13 @@ import java.io.IOException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler
-    public void handleException(Exception exception, HttpServletResponse response) throws IOException {
-        if (exception instanceof UsernameAlreadyExistsException) {
-            response.sendRedirect("/login?usernameAlreadyExists");
-        } else if (exception instanceof EmailAlreadyExistsException) {
-            response.sendRedirect("/login?emailAlreadyExists");
-        } else {
-            response.sendRedirect("/login?error");
-        }
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public void handleUsernameAlreadyExistsException(HttpServletResponse response) throws IOException {
+        response.sendRedirect("/login?usernameAlreadyExists");
+    }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public void handleEmailAlreadyExistsException(HttpServletResponse response) throws IOException {
+        response.sendRedirect("/login?emailAlreadyExists");
     }
 }

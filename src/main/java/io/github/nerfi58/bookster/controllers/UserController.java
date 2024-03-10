@@ -1,7 +1,6 @@
 package io.github.nerfi58.bookster.controllers;
 
 import io.github.nerfi58.bookster.dtos.UserDto;
-import io.github.nerfi58.bookster.entities.User;
 import io.github.nerfi58.bookster.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,15 +25,15 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    private ResponseEntity<Void> register(@Valid @RequestBody UserDto userDto) {
+    private ResponseEntity<UserDto> register(@Valid @RequestBody UserDto userDto) {
 
-        User savedUser = userService.saveUser(userDto);
+        UserDto savedUser = userService.saveUser(userDto);
 
         UriComponents location = UriComponentsBuilder.fromPath("/user/{id}").buildAndExpand(savedUser.getId());
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("HX-Redirect", "/login?registerSuccessful");
-        
-        return ResponseEntity.created(location.toUri()).headers(responseHeaders).build();
+
+        return ResponseEntity.created(location.toUri()).headers(responseHeaders).body(savedUser);
     }
 }

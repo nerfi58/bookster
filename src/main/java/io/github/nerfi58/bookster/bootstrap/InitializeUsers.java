@@ -6,6 +6,7 @@ import io.github.nerfi58.bookster.entities.enums.RoleEnum;
 import io.github.nerfi58.bookster.repositories.RoleRepository;
 import io.github.nerfi58.bookster.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ClockProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
@@ -13,8 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
-import java.time.Instant;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Component
@@ -24,15 +24,15 @@ public class InitializeUsers implements CommandLineRunner {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
-
-    private final Clock clock = Clock.systemUTC();
+    private final Clock clock;
 
     @Autowired
     public InitializeUsers(UserRepository userRepository, RoleRepository roleRepository,
-                           PasswordEncoder passwordEncoder) {
+                           PasswordEncoder passwordEncoder, ClockProvider clockProvider) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.clock = clockProvider.getClock();
     }
 
     @Override
@@ -46,7 +46,7 @@ public class InitializeUsers implements CommandLineRunner {
         user.setUsername("user");
         user.setPasshash(passwordEncoder.encode("user"));
         user.setEmail("user@bookster.com");
-        user.setCreated(Date.from(Instant.now(clock)));
+        user.setCreated(LocalDate.now(clock));
         user.setActive(true);
         user.setRoles(Set.of(userRole));
         userRepository.save(user);
@@ -55,7 +55,7 @@ public class InitializeUsers implements CommandLineRunner {
         moderator.setUsername("moderator");
         moderator.setPasshash(passwordEncoder.encode("moderator"));
         moderator.setEmail("moderator@bookster.com");
-        moderator.setCreated(Date.from(Instant.now(clock)));
+        moderator.setCreated(LocalDate.now(clock));
         moderator.setActive(true);
         moderator.setRoles(Set.of(userRole, moderaratorRole));
         userRepository.save(moderator);
@@ -64,7 +64,7 @@ public class InitializeUsers implements CommandLineRunner {
         admin.setUsername("admin");
         admin.setPasshash(passwordEncoder.encode("admin"));
         admin.setEmail("admin@bookster.com");
-        admin.setCreated(Date.from(Instant.now(clock)));
+        admin.setCreated(LocalDate.now(clock));
         admin.setActive(true);
         admin.setRoles(Set.of(userRole, moderaratorRole, adminRole));
         userRepository.save(admin);
