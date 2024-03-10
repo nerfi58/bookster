@@ -8,11 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -50,8 +48,7 @@ public class MainControllerTest {
 
     @Test
     void givenNoAuthentication_whenEnteringMainPage_thenRedirectToLoginPage() throws Exception {
-        MvcResult result = mockMvc.perform(get("/")).andReturn();
-        assertThat(result.getResponse().getRedirectedUrl()).matches("https?://[A-Za-z0-9]*(:[0-9]{1,5})?/login");
+        mockMvc.perform(get("/")).andExpect(redirectedUrl("http://localhost/login"));
     }
 
     @Test
