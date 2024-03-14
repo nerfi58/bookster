@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
 
 @Component
 @Order(2)
@@ -48,7 +48,7 @@ public class InitializeUsers implements CommandLineRunner {
         user.setEmail("user@bookster.com");
         user.setCreated(LocalDate.now(clock));
         user.setActive(true);
-        user.setRoles(Set.of(userRole));
+        user.setRoles(List.of(userRole));
         userRepository.save(user);
 
         User moderator = new User();
@@ -57,7 +57,7 @@ public class InitializeUsers implements CommandLineRunner {
         moderator.setEmail("moderator@bookster.com");
         moderator.setCreated(LocalDate.now(clock));
         moderator.setActive(true);
-        moderator.setRoles(Set.of(userRole, moderaratorRole));
+        moderator.setRoles(List.of(userRole, moderaratorRole));
         userRepository.save(moderator);
 
         User admin = new User();
@@ -66,7 +66,7 @@ public class InitializeUsers implements CommandLineRunner {
         admin.setEmail("admin@bookster.com");
         admin.setCreated(LocalDate.now(clock));
         admin.setActive(true);
-        admin.setRoles(Set.of(userRole, moderaratorRole, adminRole));
+        admin.setRoles(List.of(userRole, moderaratorRole, adminRole));
         userRepository.save(admin);
     }
 }

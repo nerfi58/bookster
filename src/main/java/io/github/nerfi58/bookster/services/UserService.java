@@ -12,15 +12,19 @@ import io.github.nerfi58.bookster.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ClockProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
+import java.util.Optional;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -34,6 +38,12 @@ public class UserService {
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.clock = clockProvider.getClock();
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<User> user = userRepository.findUserByUsername(username);
+        return user.orElseThrow(() -> new UsernameNotFoundException(username));
     }
 
     public UserDto saveUser(UserDto userDto) {
@@ -52,9 +62,9 @@ public class UserService {
         }
 
         User user = UserMapper.userDtoToUser(userDto);
-        user.setRoles(Set.of(userRole));
+        user.setRoles(List.of(userRole));
         user.setCreated(LocalDate.now(clock));
-        
+
         return UserMapper.userToUserDto(userRepository.save(user));
     }
 }
