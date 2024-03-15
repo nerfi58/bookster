@@ -46,7 +46,7 @@ public class UserService implements UserDetailsService {
         return user.orElseThrow(() -> new UsernameNotFoundException(username));
     }
 
-    public UserDto saveUser(UserDto userDto) {
+    public UserDto registerUser(UserDto userDto) {
         userDto.setUsername(userDto.getUsername().toLowerCase());
         userDto.setEmail(userDto.getEmail().toLowerCase());
         userDto.setPasshash(passwordEncoder.encode(userDto.getRawPassword()));

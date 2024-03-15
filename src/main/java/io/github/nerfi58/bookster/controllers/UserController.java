@@ -27,7 +27,7 @@ public class UserController {
     @PostMapping("/register")
     private ResponseEntity<UserDto> register(@Valid @RequestBody UserDto userDto) {
 
-        UserDto savedUser = userService.saveUser(userDto);
+        UserDto savedUser = userService.registerUser(userDto);
 
         UriComponents location = UriComponentsBuilder.fromPath("/user/{id}").buildAndExpand(savedUser.getId());
 

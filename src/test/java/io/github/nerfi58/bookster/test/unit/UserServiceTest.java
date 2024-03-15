@@ -59,7 +59,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void givenUserDto_whenSaveUser_thenConvertDtoToEntityAndSaveThatEntity() {
+    void givenUserDto_whenRegisterUser_thenConvertDtoToEntityAndSaveThatEntity() {
         UserDto userDtoToBeSaved = UserDto.builder()
                 .username("testUser")
                 .rawPassword("password")
@@ -74,7 +74,7 @@ public class UserServiceTest {
             return savedUser;
         });
 
-        UserDto savedUser = userService.saveUser(userDtoToBeSaved);
+        UserDto savedUser = userService.registerUser(userDtoToBeSaved);
 
         assertThat(savedUser).isNotNull();
         assertThat(savedUser.getId()).isEqualTo(1);
@@ -86,7 +86,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void givenUserDto_whenUserWithThisUsernameAlreadyExists_thenThrowException() {
+    void givenUserDto_whenRegisterUserAndUserWithThisUsernameAlreadyExists_thenThrowException() {
         UserDto userDtoToBeSaved = UserDto.builder()
                 .username("testUser")
                 .rawPassword("password")
@@ -96,12 +96,12 @@ public class UserServiceTest {
         given(userRepository.existsByUsername(userDtoToBeSaved.getUsername().toLowerCase())).willReturn(true);
 
         assertThatExceptionOfType(UsernameAlreadyExistsException.class).isThrownBy(() -> {
-            userService.saveUser(userDtoToBeSaved);
+            userService.registerUser(userDtoToBeSaved);
         });
     }
 
     @Test
-    void givenUserDto_whenUserWithThisEmailAlreadyExists_thenThrowException() {
+    void givenUserDto_whenRegisterUserAndUserWithThisEmailAlreadyExists_thenThrowException() {
         UserDto userDtoToBeSaved = UserDto.builder()
                 .username("testUser")
                 .rawPassword("password")
@@ -111,7 +111,29 @@ public class UserServiceTest {
         given(userRepository.existsByEmail(userDtoToBeSaved.getEmail().toLowerCase())).willReturn(true);
 
         assertThatExceptionOfType(EmailAlreadyExistsException.class).isThrownBy(() -> {
-            userService.saveUser(userDtoToBeSaved);
+            userService.registerUser(userDtoToBeSaved);
         });
+    }
+
+    @Test
+    void givenUserDtoWithUppercaseUsernameAndEmail_whenRegisterUser_thenChangeUsernameAndEmailToLowercase() {
+        UserDto userDtoToBeSaved = UserDto.builder()
+                .username("TestUserWithSomeUppercaseLetters")
+                .rawPassword("password")
+                .email("TestEmail@WithUppercase.Letters")
+                .build();
+
+        given(passwordEncoder.encode("password")).willReturn(
+                "$2a$12$GbZ1YG.3GBIqPUfkQmzV3eOzJCPM2vhF9DSXuFzIi7MBQsI3WUoRC");
+        given(userRepository.save(any(User.class))).will((i) -> {
+            User savedUser = i.getArgument(0);
+            savedUser.setId(1);
+            return savedUser;
+        });
+
+        UserDto savedUser = userService.registerUser(userDtoToBeSaved);
+
+        assertThat(savedUser.getUsername()).isEqualTo(userDtoToBeSaved.getUsername().toLowerCase());
+        assertThat(savedUser.getEmail()).isEqualTo(userDtoToBeSaved.getEmail().toLowerCase());
     }
 }

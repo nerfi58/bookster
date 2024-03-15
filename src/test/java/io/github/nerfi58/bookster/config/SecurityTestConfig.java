@@ -1,6 +1,8 @@
 package io.github.nerfi58.bookster.config;
 
-import io.github.nerfi58.bookster.security.UserDetailsJpa;
+import io.github.nerfi58.bookster.entities.Role;
+import io.github.nerfi58.bookster.entities.User;
+import io.github.nerfi58.bookster.entities.enums.RoleEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -23,17 +25,25 @@ public class SecurityTestConfig {
     @Primary
     public UserDetailsService testUserDetailsService() {
 
-        UserDetailsJpa userActive = new UserDetailsJpa();
+        Role userRole = new Role();
+        Role moderatorRole = new Role();
+        Role adminRole = new Role();
+
+        userRole.setRole(RoleEnum.USER);
+        moderatorRole.setRole(RoleEnum.MODERATOR);
+        adminRole.setRole(RoleEnum.ADMIN);
+
+        User userActive = new User();
         userActive.setUsername("userActive");
         userActive.setPasshash(passwordEncoder.encode("password"));
         userActive.setActive(true);
-        userActive.setRoles(List.of(() -> "USER"));
+        userActive.setRoles(List.of(userRole));
 
-        UserDetailsJpa userNotActive = new UserDetailsJpa();
+        User userNotActive = new User();
         userNotActive.setUsername("userNotActive");
         userNotActive.setPasshash(passwordEncoder.encode("password"));
         userNotActive.setActive(false);
-        userNotActive.setRoles(List.of(() -> "USER"));
+        userNotActive.setRoles(List.of(userRole));
 
         List<UserDetails> users = Arrays.asList(userActive, userNotActive);
         return new InMemoryUserDetailsManager(users);

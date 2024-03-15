@@ -59,7 +59,7 @@ public class UserControllerTest {
                 .email("testEmail1@example.com")
                 .build();
 
-        userService.saveUser(existingUser);
+        userService.registerUser(existingUser);
 
         UserDto givenUserDto = UserDto.builder()
                 .username("usernameWhichExists")
@@ -83,7 +83,7 @@ public class UserControllerTest {
                 .email("existingEmail@example.com")
                 .build();
 
-        userService.saveUser(existingUser);
+        userService.registerUser(existingUser);
 
         UserDto givenUserDto = UserDto.builder()
                 .username("testUser")
