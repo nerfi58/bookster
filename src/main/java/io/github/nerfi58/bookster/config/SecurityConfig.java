@@ -31,9 +31,10 @@ public class SecurityConfig {
                         .requestMatchers("/js/**").permitAll()
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/register").permitAll()
-                        .requestMatchers("/user/register").permitAll()
+                        .requestMatchers("/activate").permitAll()
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers("/").hasRole("USER")
+                        .requestMatchers("/user/register").permitAll()
+                        .requestMatchers("/user/activate").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

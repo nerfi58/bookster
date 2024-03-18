@@ -17,7 +17,7 @@ import java.io.IOException;
 @Component
 public class AuthenticationFailureHandlerImpl implements AuthenticationFailureHandler {
 
-    private String redirectUrl = "/login?error";
+    private String redirectUrl = "/error";
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Override

@@ -6,6 +6,7 @@ import io.github.nerfi58.bookster.entities.User;
 import io.github.nerfi58.bookster.entities.enums.RoleEnum;
 import io.github.nerfi58.bookster.exceptions.EmailAlreadyExistsException;
 import io.github.nerfi58.bookster.exceptions.UsernameAlreadyExistsException;
+import io.github.nerfi58.bookster.repositories.ConfirmationTokenRepository;
 import io.github.nerfi58.bookster.repositories.RoleRepository;
 import io.github.nerfi58.bookster.repositories.UserRepository;
 import io.github.nerfi58.bookster.services.UserService;
@@ -37,6 +38,9 @@ public class UserServiceTest {
     private RoleRepository roleRepository;
 
     @Mock
+    private ConfirmationTokenRepository confirmationTokenRepository;
+
+    @Mock
     private PasswordEncoder passwordEncoder;
 
     @Mock
@@ -55,7 +59,13 @@ public class UserServiceTest {
                 ZoneId.of("Europe/Warsaw")
         ));
 
-        this.userService = new UserService(userRepository, roleRepository, passwordEncoder, fixedClockProvider);
+        this.userService = new UserService(
+                userRepository,
+                roleRepository,
+                confirmationTokenRepository,
+                passwordEncoder,
+                fixedClockProvider
+        );
     }
 
     @Test
@@ -66,23 +76,27 @@ public class UserServiceTest {
                 .email("email@example.com")
                 .build();
 
+        final User[] savedUserMock = new User[1];
+        savedUserMock[0] = new User();
+
         given(passwordEncoder.encode("password")).willReturn(
                 "$2a$12$GbZ1YG.3GBIqPUfkQmzV3eOzJCPM2vhF9DSXuFzIi7MBQsI3WUoRC");
         given(userRepository.save(any(User.class))).will((i) -> {
-            User savedUser = i.getArgument(0);
-            savedUser.setId(1);
-            return savedUser;
+            savedUserMock[0] = i.getArgument(0);
+            savedUserMock[0].setId(1);
+            return savedUserMock[0];
         });
+        given(userRepository.findById(1L)).willReturn(Optional.of(savedUserMock[0]));
 
-        UserDto savedUser = userService.registerUser(userDtoToBeSaved);
+        UserDto savedUserDto = userService.registerUser(userDtoToBeSaved);
 
-        assertThat(savedUser).isNotNull();
-        assertThat(savedUser.getId()).isEqualTo(1);
-        assertThat(savedUser.getUsername()).isEqualTo(userDtoToBeSaved.getUsername());
-        assertThat(savedUser.getEmail()).isEqualTo(userDtoToBeSaved.getEmail());
-        assertThat(savedUser.getCreated()).isEqualTo(LocalDate.now(fixedClockProvider.getClock()));
-        assertThat(savedUser.getRoles()).hasSize(1);
-        assertThat(savedUser.getRoles().getFirst()).isEqualTo("USER");
+        assertThat(savedUserDto).isNotNull();
+        assertThat(savedUserDto.getId()).isEqualTo(1);
+        assertThat(savedUserDto.getUsername()).isEqualTo(userDtoToBeSaved.getUsername());
+        assertThat(savedUserDto.getEmail()).isEqualTo(userDtoToBeSaved.getEmail());
+        assertThat(savedUserDto.getCreated()).isEqualTo(LocalDate.now(fixedClockProvider.getClock()));
+        assertThat(savedUserDto.getRoles()).hasSize(1);
+        assertThat(savedUserDto.getRoles().getFirst()).isEqualTo("USER");
     }
 
     @Test
@@ -123,17 +137,21 @@ public class UserServiceTest {
                 .email("TestEmail@WithUppercase.Letters")
                 .build();
 
+        final User[] savedUserMock = new User[1];
+        savedUserMock[0] = new User();
+
         given(passwordEncoder.encode("password")).willReturn(
                 "$2a$12$GbZ1YG.3GBIqPUfkQmzV3eOzJCPM2vhF9DSXuFzIi7MBQsI3WUoRC");
         given(userRepository.save(any(User.class))).will((i) -> {
-            User savedUser = i.getArgument(0);
-            savedUser.setId(1);
-            return savedUser;
+            savedUserMock[0] = i.getArgument(0);
+            savedUserMock[0].setId(1);
+            return savedUserMock[0];
         });
+        given(userRepository.findById(1L)).willReturn(Optional.of(savedUserMock[0]));
 
-        UserDto savedUser = userService.registerUser(userDtoToBeSaved);
+        UserDto savedUserDto = userService.registerUser(userDtoToBeSaved);
 
-        assertThat(savedUser.getUsername()).isEqualTo(userDtoToBeSaved.getUsername().toLowerCase());
-        assertThat(savedUser.getEmail()).isEqualTo(userDtoToBeSaved.getEmail().toLowerCase());
+        assertThat(savedUserDto.getUsername()).isEqualTo(userDtoToBeSaved.getUsername().toLowerCase());
+        assertThat(savedUserDto.getEmail()).isEqualTo(userDtoToBeSaved.getEmail().toLowerCase());
     }
 }

@@ -6,10 +6,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -35,5 +32,16 @@ public class UserController {
         responseHeaders.set("HX-Redirect", "/login?registerSuccessful");
 
         return ResponseEntity.created(location.toUri()).headers(responseHeaders).body(savedUser);
+    }
+
+    @PostMapping("/activate")
+    private ResponseEntity<Void> activate(@RequestParam(name = "token") String token) {
+
+        userService.activateUserAccount(token);
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("HX-Redirect", "/login?activationSuccessful");
+
+        return ResponseEntity.noContent().headers(responseHeaders).build();
     }
 }

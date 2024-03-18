@@ -18,6 +18,7 @@ public class LoginPageFilter extends OncePerRequestFilter {
         if ((request.getRequestURI().equals("/login") || request.getRequestURI().equals("/register"))
             && SecurityContextHolder.getContext().getAuthentication() != null
             && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
+            
             response.sendRedirect("/");
         }
 

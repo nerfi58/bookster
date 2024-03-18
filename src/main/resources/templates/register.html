@@ -6,7 +6,7 @@
     <script th:src="@{js/htmx.min.js}"></script>
     <script th:src="@{js/htmx-json-enc.js}"></script>
     <script th:src="@{js/hyperscript.min.js}"></script>
-    <link rel="stylesheet" th:href="@{css/register-login.css}">
+    <link rel="stylesheet" th:href="@{css/styles.css}">
 </head>
 <body>
 <div id="register-form-container">
@@ -33,6 +33,15 @@
 <div class="register-login-box">
     <p>Already have an account?</p>
     <a th:href="@{/login}" class="register-login-button">Login here</a>
+</div>
+<div th:unless="${param.isEmpty()}" th:switch="${param.keySet()[0]}" id="message-info-box">
+    <div th:case="'usernameAlreadyExists'" class="message">
+        Registration failed, this username already exists. Please try again with different username.
+    </div>
+    <div th:case="'emailAlreadyExists'" class="message">
+        Registration failed. This email is already used with another account. Please use different email address.
+    </div>
+    <button class="ok-button" _="on click add @hidden to #message-info-box">OK</button>
 </div>
 </body>
 </html>

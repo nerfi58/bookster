@@ -15,8 +15,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -52,7 +50,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void givenUserDto_whenRegisteringUserAndUserWithThatUsernameAlreadyExists_thenRedirectToErrorPage() throws Exception {
+    void givenUserDto_whenRegisteringUserAndUserWithThatUsernameAlreadyExists_thenReturnRedirectHeaderWithErrorUrl() throws Exception {
         UserDto existingUser = UserDto.builder()
                 .username("usernameWhichExists")
                 .rawPassword("password")
@@ -67,16 +65,16 @@ public class UserControllerTest {
                 .email("anotherEmail@example")
                 .build();
 
-        mockMvc.perform(post("/user/register")
-                                .with(csrf())
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(givenUserDto)))
-                .andExpect(status().isFound())
-                .andExpect(redirectedUrl("/login?usernameAlreadyExists"));
+        MvcResult result = mockMvc.perform(post("/user/register")
+                                                   .with(csrf())
+                                                   .contentType(MediaType.APPLICATION_JSON)
+                                                   .content(objectMapper.writeValueAsString(givenUserDto))).andReturn();
+
+        assertThat(result.getResponse().getHeader("HX-Redirect")).isEqualTo("/register?usernameAlreadyExists");
     }
 
     @Test
-    void givenUserDto_whenRegisteringUserAndUserWithGivenMailAlreadyExists_thenRedirectToErrorPage() throws Exception {
+    void givenUserDto_whenRegisteringUserAndUserWithGivenMailAlreadyExists_thenReturnRedirectHeaderWithErrorUrl() throws Exception {
         UserDto existingUser = UserDto.builder()
                 .username("sampleUser")
                 .rawPassword("password")
@@ -91,12 +89,12 @@ public class UserControllerTest {
                 .email("existingEmail@example.com")
                 .build();
 
-        mockMvc.perform(post("/user/register")
-                                .with(csrf())
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(givenUserDto)))
-                .andExpect(status().isFound())
-                .andExpect(redirectedUrl("/login?emailAlreadyExists"));
+        MvcResult result = mockMvc.perform(post("/user/register")
+                                                   .with(csrf())
+                                                   .contentType(MediaType.APPLICATION_JSON)
+                                                   .content(objectMapper.writeValueAsString(givenUserDto))).andReturn();
+
+        assertThat(result.getResponse().getHeader("HX-Redirect")).isEqualTo("/register?emailAlreadyExists");
     }
 }
 

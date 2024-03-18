@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bookster | Activate</title>
+    <script th:src="@{js/htmx.min.js}"></script>
+    <link rel="stylesheet" th:href="@{css/styles.css}">
+</head>
+<body>
+<div id="message-info-box">
+    <div class="message">
+        Click button below to activate your account.
+    </div>
+    <button class="ok-button" th:hx-post="|@{/user/activate?token=}${token}|"
+            th:hx-headers='|{"X-CSRF-TOKEN": "${_csrf.token}"}|'>ACTIVATE
+    </button>
+</div>
+</body>
+</html>

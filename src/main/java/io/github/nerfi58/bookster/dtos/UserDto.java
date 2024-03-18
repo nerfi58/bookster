@@ -14,7 +14,7 @@ import java.util.List;
 @Setter
 @Builder
 public class UserDto {
-    private long id;
+    private Long id;
 
     @NotNull
     @Size(min = 5, max = 32)

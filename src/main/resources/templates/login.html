@@ -6,7 +6,7 @@
     <script th:src="@{js/htmx.min.js}"></script>
     <script th:src="@{js/hyperscript.min.js}"></script>
     <script th:src="@{js/htmx-json-enc.js}"></script>
-    <link rel="stylesheet" th:href="@{/css/register-login.css}">
+    <link rel="stylesheet" th:href="@{css/styles.css}">
 </head>
 <body>
 <div id="login-form-container">
@@ -39,8 +39,8 @@
     <div th:case="'emailAlreadyExists'" class="message">
         Registration failed. This email is already used with another account. Please use different email address.
     </div>
-    <div th:case="*" class="message">
-        Some weird unknown error happened. Please try again.
+    <div th:case="'activationSuccessful'" class="message">
+        You have successfully activated your account. You can now log in here.
     </div>
     <button class="ok-button" _="on click add @hidden to #message-info-box">OK</button>
 </div>

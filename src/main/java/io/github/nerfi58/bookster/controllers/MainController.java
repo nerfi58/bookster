@@ -1,7 +1,9 @@
 package io.github.nerfi58.bookster.controllers;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class MainController {
@@ -19,5 +21,16 @@ public class MainController {
     @GetMapping("/register")
     public String register() {
         return "register";
+    }
+
+    @GetMapping("/activate")
+    public String activate(Model model, @RequestParam(name = "token") String token) {
+        model.addAttribute("token", token);
+        return "activate";
+    }
+
+    @GetMapping("/error")
+    public String error() {
+        return "error";
     }
 }
