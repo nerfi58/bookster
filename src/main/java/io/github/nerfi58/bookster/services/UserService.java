@@ -5,7 +5,6 @@ import io.github.nerfi58.bookster.entities.ConfirmationToken;
 import io.github.nerfi58.bookster.entities.Role;
 import io.github.nerfi58.bookster.entities.User;
 import io.github.nerfi58.bookster.entities.enums.RoleEnum;
-import io.github.nerfi58.bookster.exceptions.DefaultErrorException;
 import io.github.nerfi58.bookster.exceptions.EmailAlreadyExistsException;
 import io.github.nerfi58.bookster.exceptions.TokenNotValidException;
 import io.github.nerfi58.bookster.exceptions.UsernameAlreadyExistsException;
@@ -95,10 +94,10 @@ public class UserService implements UserDetailsService {
         return confirmationTokenRepository.save(confirmationToken);
     }
 
-    public UserDto activateUserAccount(String token) {
+    public void activateUserAccount(String token) {
 
         ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(token)
-                .orElseThrow(DefaultErrorException::new);
+                .orElseThrow(TokenNotValidException::new);
 
         //if token was already used or is expired
         if (confirmationToken.getConfirmedAt() != null ||
@@ -112,6 +111,6 @@ public class UserService implements UserDetailsService {
         confirmationToken.setConfirmedAt(LocalDateTime.now(clock));
 
         confirmationTokenRepository.save(confirmationToken);
-        return UserMapper.userToUserDto(userRepository.save(user));
+        userRepository.save(user);
     }
 }

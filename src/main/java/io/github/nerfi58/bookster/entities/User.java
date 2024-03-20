@@ -49,6 +49,9 @@ public class User implements UserDetails {
     )
     private List<Role> roles = new ArrayList<>();
 
+    @OneToOne(mappedBy = "user")
+    private ConfirmationToken confirmationToken;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();

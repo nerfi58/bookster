@@ -34,4 +34,6 @@ public class UserDto {
     private LocalDate created;
 
     private List<String> roles;
+
+    private String confirmationToken;
 }

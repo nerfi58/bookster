@@ -3,6 +3,7 @@ package io.github.nerfi58.bookster.entities;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Table(name = "confirmation_token")
 @Getter
 @Setter
+@ToString
 public class ConfirmationToken {
 
     @Id
@@ -21,8 +23,8 @@ public class ConfirmationToken {
     @Column(name = "token", nullable = false, unique = true, updatable = false, columnDefinition = "VARCHAR(36)")
     private String token;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false, updatable = false, columnDefinition = "BIGINT")
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false, unique = true, updatable = false, columnDefinition = "BIGINT")
     private User user;
 
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")

@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Bookster | Error</title>
+    <script th:src="@{js/htmx.min.js}"></script>
     <link rel="stylesheet" th:href="@{css/styles.css}">
 </head>
 <body>
@@ -10,6 +11,7 @@
     <div class="message">
         UNKNOWN ERROR OCCURRED! PLEASE RETURN BACK TO MAIN PAGE
     </div>
+    <a th:href="@{/}" class="ok-button">MAIN PAGE</a>
 </div>
 </body>
 </html>

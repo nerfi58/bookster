@@ -2,7 +2,12 @@ package io.github.nerfi58.bookster.test.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.nerfi58.bookster.dtos.UserDto;
+import io.github.nerfi58.bookster.entities.ConfirmationToken;
+import io.github.nerfi58.bookster.entities.User;
+import io.github.nerfi58.bookster.repositories.ConfirmationTokenRepository;
+import io.github.nerfi58.bookster.repositories.UserRepository;
 import io.github.nerfi58.bookster.services.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -28,6 +33,12 @@ public class UserControllerTest {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ConfirmationTokenRepository confirmationTokenRepository;
 
     @Test
     void givenUserDto_whenRegisteringUserAndAllDataIsCorrect_thenReturnLocationAndHxRedirectHeadersWithRegisteredUser() throws Exception {
@@ -95,6 +106,34 @@ public class UserControllerTest {
                                                    .content(objectMapper.writeValueAsString(givenUserDto))).andReturn();
 
         assertThat(result.getResponse().getHeader("HX-Redirect")).isEqualTo("/register?emailAlreadyExists");
+    }
+
+    @Test
+    void givenUserDto_whenActivateUserByToken_thenActivateUserAssociatedWithThatTokenAndRedirect() throws Exception {
+        UserDto notActiveUser = UserDto.builder()
+                .username("notActiveUser")
+                .rawPassword("testPassword")
+                .email("notActiveUser@example.com")
+                .build();
+
+        userService.registerUser(notActiveUser);
+
+        User user = userRepository.findUserByUsername("notActiveUser".toLowerCase())
+                .orElseThrow(EntityNotFoundException::new);
+
+        ConfirmationToken confirmationToken = confirmationTokenRepository.findByUser(user)
+                .orElseThrow(EntityNotFoundException::new);
+
+        MvcResult result = mockMvc.perform(post("/user/activate?token=" + confirmationToken.getToken())
+                                                   .with(csrf())).andReturn();
+
+        User userAfterActivating = userRepository.findUserByUsername("notActiveUser".toLowerCase())
+                .orElseThrow(EntityNotFoundException::new);
+
+        assertThat(result.getResponse().getHeader("HX-Redirect")).isEqualTo("/login?activationSuccessful");
+        assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(userAfterActivating.isActive()).isTrue();
+
     }
 }
 
