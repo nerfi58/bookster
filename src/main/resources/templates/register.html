@@ -41,6 +41,9 @@
     <div th:case="'emailAlreadyExists'" class="message">
         Registration failed. This email is already used with another account. Please use different email address.
     </div>
+    <div th:case="*" class="message">
+        UNKNOWN ERROR OCCURRED!
+    </div>
     <button class="ok-button" _="on click add @hidden to #message-info-box">OK</button>
 </div>
 </body>

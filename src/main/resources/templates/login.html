@@ -42,6 +42,9 @@
     <div th:case="'activationSuccessful'" class="message">
         You have successfully activated your account. You can now log in here.
     </div>
+    <div th:case="*" class="message">
+        UNKNOWN ERROR OCCURRED!
+    </div>
     <button class="ok-button" _="on click add @hidden to #message-info-box">OK</button>
 </div>
 </body>
