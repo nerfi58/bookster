@@ -70,6 +70,7 @@ public class UserConfirmationService {
         }
 
         User user = confirmationToken.getUser();
+
         user.setActive(true);
         confirmationToken.setConfirmedAt(LocalDateTime.now(clock));
 

@@ -16,6 +16,10 @@ public class ConfirmationTokenListener {
 
     @EventListener
     public void eventListener(OnTokenGenerationCompleteEvent event) {
-        mailService.sendSimpleMessage(event.getUser().getEmail(), event.getUser().getUsername(), event.getToken());
+        mailService.sendVerificationMessage(
+                event.getUser().getEmail(),
+                event.getUser().getUsername(),
+                event.getToken()
+        );
     }
 }

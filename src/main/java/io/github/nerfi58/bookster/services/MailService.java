@@ -13,7 +13,7 @@ public class MailService {
         this.javaMailSender = javaMailSender;
     }
 
-    public void sendSimpleMessage(String to, String username, String token) {
+    public void sendVerificationMessage(String to, String username, String token) {
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("booksterservice@gmail.com");

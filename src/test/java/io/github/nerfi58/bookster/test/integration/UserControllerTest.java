@@ -1,6 +1,9 @@
 package io.github.nerfi58.bookster.test.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.icegreen.greenmail.store.FolderException;
+import com.icegreen.greenmail.util.GreenMail;
+import com.icegreen.greenmail.util.ServerSetup;
 import io.github.nerfi58.bookster.config.SecurityTestConfig;
 import io.github.nerfi58.bookster.dtos.UserDto;
 import io.github.nerfi58.bookster.entities.ConfirmationToken;
@@ -8,7 +11,11 @@ import io.github.nerfi58.bookster.entities.User;
 import io.github.nerfi58.bookster.repositories.ConfirmationTokenRepository;
 import io.github.nerfi58.bookster.repositories.UserRepository;
 import io.github.nerfi58.bookster.services.UserService;
+import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -47,6 +54,25 @@ public class UserControllerTest {
 
     @Autowired
     private ConfirmationTokenRepository confirmationTokenRepository;
+
+    private static GreenMail smtpServer;
+
+    @BeforeAll
+    static void beforeAll() {
+        smtpServer = new GreenMail(new ServerSetup(2525, null, ServerSetup.PROTOCOL_SMTP));
+        smtpServer.setUser("username", "secret");
+        smtpServer.start();
+    }
+
+    @BeforeEach
+    void beforeEach() throws FolderException {
+        smtpServer.purgeEmailFromAllMailboxes();
+    }
+
+    @AfterAll
+    static void afterAll() {
+        smtpServer.stop();
+    }
 
     @Test
     void givenUserDto_whenRegisteringUserAndAllDataIsCorrect_thenReturnLocationAndHxRedirectHeadersWithRegisteredUser() throws Exception {
@@ -118,7 +144,7 @@ public class UserControllerTest {
 
     @Test
     @Transactional
-    void givenUserUd_whenGenerateToken_thenGenerateTokenForUserWithGivenIdAndRedirectToLoginPage() throws Exception {
+    void givenUserUd_whenGenerateToken_thenGenerateTokenForUserWithGivenIdAndSendMailToThatUser() throws Exception {
         UserDto user = UserDto.builder()
                 .username("testUser")
                 .rawPassword("password")
@@ -135,10 +161,23 @@ public class UserControllerTest {
                 .orElseThrow(EntityNotFoundException::new)
                 .getFirst();
 
+        MimeMessage message = smtpServer.getReceivedMessages()[0];
+
+        String expectedMessage = """
+                Hello, testuser. Welcome in Bookster Service!
+                                
+                In order to confirm your account, please follow this link:
+                http://localhost:8080/activate?token=%s
+                """.formatted(token.getToken());
+
+        assertThat(message.getSubject()).isEqualTo("BOOKSTER - ACCOUNT VERIFICATION");
+        assertThat(message.getFrom()[0].toString()).isEqualTo("booksterservice@gmail.com");
+        assertThat(message.getContent().toString()).isEqualToIgnoringNewLines(expectedMessage);
         assertThat(token.getToken()).isNotNull();
         assertThat(token.getUser().getUsername()).isEqualTo("testuser");
         assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
         assertThat(result.getResponse().getHeader("HX-Redirect")).isEqualTo("/login?registerSuccessful");
+
     }
 
     @Test
