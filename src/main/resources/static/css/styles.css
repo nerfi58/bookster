@@ -121,7 +121,7 @@ body {
     font-size: 18px;
 }
 
-#message-info-box .ok-button {
+#message-info-box .confirm-button {
     position: absolute;
     padding: 20px 35px;
     bottom: 0;
@@ -139,11 +139,16 @@ body {
     text-decoration: none;
 }
 
-#message-info-box .ok-button:hover {
+#message-info-box .confirm-button:hover {
     background-color: #000000;
     color: #ffffff;
     cursor: pointer;
     transition: 0.2s;
+}
+
+#message-info-box .activate-button {
+    top: 200px;
+    padding-bottom: 60px;
 }
 
 .form-info {

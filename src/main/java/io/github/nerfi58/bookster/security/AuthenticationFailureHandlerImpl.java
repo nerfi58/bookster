@@ -26,7 +26,7 @@ public class AuthenticationFailureHandlerImpl implements AuthenticationFailureHa
         if (exception instanceof BadCredentialsException) {
             setRedirectUrl("/login?badCredentials");
         } else if (exception instanceof AccountNotActivatedException) {
-            setRedirectUrl("/login?notActivated");
+            setRedirectUrl("/login?notActivated&u=" + ((AccountNotActivatedException) exception).getUserId());
         }
 
         redirectStrategy.sendRedirect(request, response, redirectUrl);

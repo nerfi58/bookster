@@ -21,7 +21,6 @@ public class UserMapper {
                 .email(user.getEmail())
                 .created(user.getCreated())
                 .roles(user.getRoles().stream().map(e -> e.getRole().name()).toList())
-                .confirmationToken(user.getConfirmationToken() != null ? user.getConfirmationToken().getToken() : "")
                 .build();
     }
 }

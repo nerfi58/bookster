@@ -25,19 +25,18 @@
 <div th:unless="${param.isEmpty()}" th:switch="${param.keySet()[0]}" id="message-info-box">
     <div th:case="'notActivated'" class="message">
         Your account has not been activated yet. Please check your email for more information.
+        <button class="confirm-button activate-button" th:if="${param.get('u') != null}"
+                _="on load add @hidden to .ok-button" th:hx-post="${url}"
+                th:with="url=|@{/user/generate-token?u=}${param.get('u')}|"
+                th:hx-headers='|{"X-CSRF-TOKEN": "${_csrf.token}"}|'>
+            RESEND ACTIVATION EMAIL
+        </button>
     </div>
     <div th:case="'badCredentials'" class="message">
         Invalid username or password. Please try again.
     </div>
     <div th:case="'registerSuccessful'" class="message">
-        Your account has been created successfully. Activate your account with link sent to
-        your email address.
-    </div>
-    <div th:case="'usernameAlreadyExists'" class="message">
-        Registration failed, this username already exists. Please try again with different username.
-    </div>
-    <div th:case="'emailAlreadyExists'" class="message">
-        Registration failed. This email is already used with another account. Please use different email address.
+        Activate your account with link sent to your email address.
     </div>
     <div th:case="'activationSuccessful'" class="message">
         You have successfully activated your account. You can now log in here.
@@ -45,7 +44,7 @@
     <div th:case="*" class="message">
         UNKNOWN ERROR OCCURRED!
     </div>
-    <button class="ok-button" _="on click add @hidden to #message-info-box">OK</button>
+    <button class="confirm-button ok-button" _="on click add @hidden to #message-info-box">OK</button>
 </div>
 </body>
 </html>

@@ -23,8 +23,8 @@ public class ConfirmationToken {
     @Column(name = "token", nullable = false, unique = true, updatable = false, columnDefinition = "VARCHAR(36)")
     private String token;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false, unique = true, updatable = false, columnDefinition = "BIGINT")
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false, updatable = false, columnDefinition = "BIGINT")
     private User user;
 
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")

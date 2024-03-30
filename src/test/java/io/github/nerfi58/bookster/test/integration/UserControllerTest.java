@@ -1,6 +1,7 @@
 package io.github.nerfi58.bookster.test.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.nerfi58.bookster.config.SecurityTestConfig;
 import io.github.nerfi58.bookster.dtos.UserDto;
 import io.github.nerfi58.bookster.entities.ConfirmationToken;
 import io.github.nerfi58.bookster.entities.User;
@@ -14,15 +15,22 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-@SpringBootTest
+@SpringBootTest(classes = SecurityTestConfig.class)
 @AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 public class UserControllerTest {
 
     @Autowired
@@ -109,6 +117,31 @@ public class UserControllerTest {
     }
 
     @Test
+    @Transactional
+    void givenUserUd_whenGenerateToken_thenGenerateTokenForUserWithGivenIdAndRedirectToLoginPage() throws Exception {
+        UserDto user = UserDto.builder()
+                .username("testUser")
+                .rawPassword("password")
+                .email("mail@example.com")
+                .build();
+
+        userService.registerUser(user);
+
+        MvcResult result = mockMvc.perform(post("/user/generate-token?u=4").with(csrf())).andReturn();
+
+        User savedUser = userRepository.findById(4L).orElseThrow(EntityNotFoundException::new);
+
+        ConfirmationToken token = confirmationTokenRepository.findByUser(savedUser)
+                .orElseThrow(EntityNotFoundException::new)
+                .getFirst();
+
+        assertThat(token.getToken()).isNotNull();
+        assertThat(token.getUser().getUsername()).isEqualTo("testuser");
+        assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(result.getResponse().getHeader("HX-Redirect")).isEqualTo("/login?registerSuccessful");
+    }
+
+    @Test
     void givenUserDto_whenActivateUserByToken_thenActivateUserAssociatedWithThatTokenAndRedirect() throws Exception {
         UserDto notActiveUser = UserDto.builder()
                 .username("notActiveUser")
@@ -121,8 +154,10 @@ public class UserControllerTest {
         User user = userRepository.findUserByUsername("notActiveUser".toLowerCase())
                 .orElseThrow(EntityNotFoundException::new);
 
-        ConfirmationToken confirmationToken = confirmationTokenRepository.findByUser(user)
+        List<ConfirmationToken> confirmationTokenList = confirmationTokenRepository.findByUser(user)
                 .orElseThrow(EntityNotFoundException::new);
+
+        ConfirmationToken confirmationToken = confirmationTokenList.getFirst();
 
         MvcResult result = mockMvc.perform(post("/user/activate?token=" + confirmationToken.getToken())
                                                    .with(csrf())).andReturn();
@@ -133,7 +168,6 @@ public class UserControllerTest {
         assertThat(result.getResponse().getHeader("HX-Redirect")).isEqualTo("/login?activationSuccessful");
         assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
         assertThat(userAfterActivating.isActive()).isTrue();
-
     }
 }
 

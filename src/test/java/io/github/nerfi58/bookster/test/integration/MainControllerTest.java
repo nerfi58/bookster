@@ -7,6 +7,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
@@ -18,6 +20,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(classes = SecurityTestConfig.class)
 @AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 public class MainControllerTest {
 
     @Autowired
@@ -29,9 +33,9 @@ public class MainControllerTest {
     }
 
     @Test
-    void givenNotActiveUser_whenLoginIn_thenRedirectWithNotActivatedParameter() throws Exception {
+    void givenNotActiveUser_whenLoginIn_thenRedirectWithNotActivatedParameterAndUserId() throws Exception {
         mockMvc.perform(formLogin().user("userNotActive").password("password"))
-                .andExpect(redirectedUrl("/login?notActivated"));
+                .andExpect(redirectedUrl("/login?notActivated&u=2"));
     }
 
     @Test

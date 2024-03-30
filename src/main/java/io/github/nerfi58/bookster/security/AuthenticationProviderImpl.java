@@ -1,5 +1,6 @@
 package io.github.nerfi58.bookster.security;
 
+import io.github.nerfi58.bookster.entities.User;
 import io.github.nerfi58.bookster.exceptions.AccountNotActivatedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -38,7 +39,7 @@ public class AuthenticationProviderImpl implements AuthenticationProvider {
             }
 
             if (!userDetails.isEnabled()) {
-                throw new AccountNotActivatedException("Account not activated");
+                throw new AccountNotActivatedException("Account not activated", ((User) userDetails).getId());
             }
             return new UsernamePasswordAuthenticationToken(
                     userDetails.getUsername(),

@@ -35,7 +35,7 @@ public class SecurityConfig {
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/user/register").permitAll()
                         .requestMatchers("/user/activate").permitAll()
-                        .requestMatchers("/errorpage").permitAll()
+                        .requestMatchers("/user/generate-token").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

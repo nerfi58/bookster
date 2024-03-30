@@ -1,6 +1,7 @@
 package io.github.nerfi58.bookster.controllers;
 
 import io.github.nerfi58.bookster.dtos.UserDto;
+import io.github.nerfi58.bookster.services.UserConfirmationService;
 import io.github.nerfi58.bookster.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class UserController {
 
     private final UserService userService;
+    private final UserConfirmationService userConfirmationService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserConfirmationService userConfirmationService) {
         this.userService = userService;
+        this.userConfirmationService = userConfirmationService;
     }
 
     @PostMapping("/register")
@@ -34,10 +37,21 @@ public class UserController {
         return ResponseEntity.created(location.toUri()).headers(responseHeaders).body(savedUser);
     }
 
+    @PostMapping("/generate-token")
+    private ResponseEntity<Void> generateToken(@RequestParam(name = "u") long userId) {
+        
+        userConfirmationService.generateConfirmationToken(userId);
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("HX-Redirect", "/login?registerSuccessful");
+
+        return ResponseEntity.noContent().headers(responseHeaders).build();
+    }
+
     @PostMapping("/activate")
     private ResponseEntity<Void> activate(@RequestParam(name = "token") String token) {
 
-        userService.activateUserAccount(token);
+        userConfirmationService.activateUserAccount(token);
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("HX-Redirect", "/login?activationSuccessful");
