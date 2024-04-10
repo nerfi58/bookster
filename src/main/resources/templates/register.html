@@ -2,16 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <meta name="_csrf" th:content="${_csrf.token}">
     <title>Bookster | Register</title>
-    <script th:src="@{js/htmx.min.js}"></script>
-    <script th:src="@{js/htmx-json-enc.js}"></script>
-    <script th:src="@{js/hyperscript.min.js}"></script>
-    <link rel="stylesheet" th:href="@{css/styles.css}">
+    <script th:src="@{/js/htmx.min.js}"></script>
+    <script th:src="@{/js/htmx-json-enc.js}"></script>
+    <script th:src="@{/js/hyperscript.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/login-register.css}">
 </head>
 <body>
 <div id="register-form-container">
-    <form th:hx-post="|@{/user/register}|" hx-ext="json-enc" th:hx-headers='|{"X-CSRF-TOKEN": "${_csrf.token}"}|'
-          id="register-form">
+    <form th:hx-post="|@{/user/register}|" hx-ext="json-enc" th:hx-headers='|"${_csrf.headerName}": "${_csrf.token}"|'
+          id="register-form" hx-indicator="#loading">
         <label for="username">Username</label>
         <input type="text" id="username" name="username" placeholder="user" required minlength="5" maxlength="32">
         <label for="email">Email address</label>
@@ -27,7 +29,9 @@
               hidden
               class="form-info">
         PASSWORDS ARE NOT THE SAME</span>
-        <input type="submit" id="register-button" value="Register" disabled class="disabled">
+        <input type="submit" id="register-button" value="Register">
+        <img id="loading" class="htmx-indicator" th:src="@{/img/loading.svg}" alt="Loading image animation"
+             width="160px" height="20px">
     </form>
 </div>
 <div class="register-login-box">

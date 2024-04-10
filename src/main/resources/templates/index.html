@@ -1,15 +1,125 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Bookster</title>
-    <script th:src="@{js/htmx.min.js}"></script>
-    <link rel="stylesheet" th:href="@{css/styles.css}">
+    <script th:src="@{/js/htmx.min.js}"></script>
+    <script th:src="@{/js/htmx-client-side-templates.js}"></script>
+    <script th:src="@{/js/nunjucks.js}"></script>
+    <script th:src="@{/js/hyperscript.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap"
+          rel="stylesheet">
+
 </head>
 <body>
-Hello, <span sec:authentication="name"></span>!
-<form th:action="@{/logout}" method="POST">
-    <input type="submit" value="Logout">
-</form>
+<div class="top-nav">
+    <button class="nav-button"><a th:href="@{/}">Main Page</a></button>
+
+    <a class="nav-link username" th:href="|@{/user/}${#authentication.getName()}|"
+       th:text="${#authentication.getName()}"></a>
+
+    <a class="nav-link" th:href="@{/books}">All Books</a>
+
+    <form class="logout-form" th:action="@{/logout}" method="POST">
+        <input class="nav-button" type="submit" value="Logout">
+    </form>
+</div>
+
+<div class="content" hx-ext="client-side-templates">
+
+    <div class="header">
+        <h1>YOUR BOOKS</h1>
+    </div>
+
+    <div class="sort-filter-nav">
+        <div id="sort-menu">
+            <div id="sort-button"
+                 th:url="@{/book/user/}"
+                 th:username="${#authentication.getName()}"
+                 sort="title"
+                 bookTitle=""
+                 author=""
+                 genre=""
+                 publisher=""
+                 _="on load or 'sort-updated' or 'filter-updated' set #trigger-div's @hx-get to @url + @username + '?sort=' + @sort + '&filter=%7B%22title%22%3A%22' + @bookTitle + '%22%2C%22author%22%3A%22' + @author + '%22%2C%22genre%22%3A%22' + @genre + '%22%2C%22publisher%22%3A%22' + @publisher + '%22%7D&page=0' then remove <.books *:not(:first-child)/> then js htmx.process(document.getElementById('trigger-div')) end then trigger 'books-url-updated' end">
+                Sort <i class="arrow down"></i>
+            </div>
+            <div id="sort-content">
+                <p _="on click set #sort-button's @sort to 'publisher' then trigger 'sort-updated' on #sort-button">
+                    Publisher</p>
+                <p _="on click set #sort-button's @sort to 'title' then trigger 'sort-updated' on #sort-button">
+                    Title</p>
+            </div>
+        </div>
+
+        <div id="filter-menu">
+            <div id="filter-button">Filter <i class="arrow down"></i></div>
+            <div class="filter-form">
+                <div class="filter-form-input">
+                    <label for="filter-title">Title</label>
+                    <input type="text" id="filter-title"
+                           _="on change set #sort-button's @bookTitle to my value then trigger 'filter-updated' on #sort-button">
+                </div>
+                <div class="filter-form-input">
+                    <label for="filter-author">Author</label>
+                    <input type="text" id="filter-author"
+                           _="on change set #sort-button's @author to my value then trigger 'filter-updated' on #sort-button">
+                </div>
+                <div class="filter-form-input">
+                    <label for="filter-genre">Genre</label>
+                    <input type="text" id="filter-genre"
+                           _="on change set #sort-button's @genre to my value then trigger 'filter-updated' on #sort-button">
+                </div>
+                <div class="filter-form-input">
+                    <label for="filter-publisher">Publisher</label>
+                    <input type="text" id="filter-publisher"
+                           _="on change set #sort-button's @publisher to my value then trigger 'filter-updated' on #sort-button">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="books">
+        <div id="trigger-div" hx-swap="afterend"
+             hx-trigger="books-url-updated from:#sort-button"
+             nunjucks-template="books-template">
+        </div>
+    </div>
+
+    <template id="books-template">
+        {% for book in content %}
+        <div class="book-content">
+            <p class="publisher">{{ book.publisher.name }}</p>
+            <p class="title">{{ book.title }}</p>
+            <div class="authors">
+                {% for author in book.authors %}
+                <p class="author">{{ author.fullName }}</p>
+                {% endfor %}
+            </div>
+            <div class="genres">
+                {% for genre in book.genres %}
+                <p class="genre">{{ genre }}</p>
+                {% endfor %}
+            </div>
+            <a class="details-href-button" th:href="|@{/book}?id={{ book.id }}|">Details</a>
+        </div>
+        {% endfor %}
+
+        {% if next %}
+        <div hx-get="{{ next }}" hx-swap="beforebegin"
+             hx-trigger="revealed"
+             nunjucks-template="books-template">
+        </div>
+        {% endif %}
+
+        {% if content|length == 0 %}
+        <p class="no-books">You didn't read any books matching criteria yet :(</p>
+        {% endif %}
+    </template>
+</div>
 </body>
 </html>

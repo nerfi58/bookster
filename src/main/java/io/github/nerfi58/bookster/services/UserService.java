@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -69,7 +69,7 @@ public class UserService implements UserDetailsService {
         }
 
         User user = UserMapper.userDtoToUser(userDto);
-        user.setRoles(List.of(userRole));
+        user.setRoles(Set.of(userRole));
         user.setCreated(LocalDate.now(clock));
         user.setActive(false);
 

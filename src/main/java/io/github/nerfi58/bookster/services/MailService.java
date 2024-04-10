@@ -20,6 +20,8 @@ public class MailService {
         message.setTo(to);
         message.setSubject("BOOKSTER - ACCOUNT VERIFICATION");
 
+        //TODO: MAKE URL NOT STATIC
+
         String messageText = """
                 Hello, %s. Welcome in Bookster Service!
                                 

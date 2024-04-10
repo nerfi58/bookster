@@ -18,7 +18,7 @@ import java.util.UUID;
 @Service
 public class UserConfirmationService {
 
-    static final int TOKEN_EXPIRATION_IN_SECONDS = 60 * 60 * 24;
+    private static final int TOKEN_EXPIRATION_IN_SECONDS = 60 * 60 * 24; //24 hours
 
     private final UserRepository userRepository;
     private final ConfirmationTokenRepository confirmationTokenRepository;

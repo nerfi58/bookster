@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "\"user\"")
@@ -47,7 +48,15 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id", columnDefinition = "BIGINT"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", columnDefinition = "BIGINT")
     )
-    private List<Role> roles = new ArrayList<>();
+    private Set<Role> roles;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "book_read_by_user",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id", columnDefinition = "BIGINT"),
+            inverseJoinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id", columnDefinition = "BIGINT")
+    )
+    private Set<Book> booksRead;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

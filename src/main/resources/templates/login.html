@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Bookster | Login</title>
-    <script th:src="@{js/htmx.min.js}"></script>
-    <script th:src="@{js/hyperscript.min.js}"></script>
-    <script th:src="@{js/htmx-json-enc.js}"></script>
-    <link rel="stylesheet" th:href="@{css/styles.css}">
+    <script th:src="@{/js/htmx.min.js}"></script>
+    <script th:src="@{/js/hyperscript.min.js}"></script>
+    <script th:src="@{/js/htmx-json-enc.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/login-register.css}">
 </head>
 <body>
 <div id="login-form-container">
@@ -28,9 +28,12 @@
         <button class="confirm-button activate-button" th:if="${param.get('u') != null}"
                 _="on load add @hidden to .ok-button" th:hx-post="${url}"
                 th:with="url=|@{/user/generate-token?u=}${param.get('u')}|"
-                th:hx-headers='|{"X-CSRF-TOKEN": "${_csrf.token}"}|'>
+                th:hx-headers='|{"X-CSRF-TOKEN": "${_csrf.token}"}|'
+                hx-indicator="#loading-activation">
             RESEND ACTIVATION EMAIL
         </button>
+        <img id="loading-activation" class="htmx-indicator" th:src="@{/img/loading.svg}" alt="Loading image animation"
+             width="160px" height="20px">
     </div>
     <div th:case="'badCredentials'" class="message">
         Invalid username or password. Please try again.

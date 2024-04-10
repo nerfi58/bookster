@@ -3,6 +3,8 @@ package io.github.nerfi58.bookster.mappers;
 import io.github.nerfi58.bookster.dtos.UserDto;
 import io.github.nerfi58.bookster.entities.User;
 
+import java.util.stream.Collectors;
+
 public class UserMapper {
 
     public static User userDtoToUser(UserDto userDto) {
@@ -20,7 +22,7 @@ public class UserMapper {
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .created(user.getCreated())
-                .roles(user.getRoles().stream().map(e -> e.getRole().name()).toList())
+                .roles(user.getRoles().stream().map(e -> e.getRole().name()).collect(Collectors.toSet()))
                 .build();
     }
 }

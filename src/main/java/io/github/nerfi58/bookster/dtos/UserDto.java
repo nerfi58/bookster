@@ -1,5 +1,6 @@
 package io.github.nerfi58.bookster.dtos;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -8,7 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -21,9 +22,11 @@ public class UserDto {
     private String username;
 
     @Size(min = 8)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String rawPassword;
 
     @Size(min = 72, max = 72)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String passhash;
 
     @NotNull
@@ -33,7 +36,5 @@ public class UserDto {
 
     private LocalDate created;
 
-    private List<String> roles;
-
-    private String confirmationToken;
+    private Set<String> roles;
 }

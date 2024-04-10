@@ -15,9 +15,10 @@ import java.time.LocalDateTime;
 public class ConfirmationToken {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "confirmation_token_gen")
-    @SequenceGenerator(name = "user_confirmation_token_gen", sequenceName = "confirmation_token_seq",
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "confirmation_token_id_gen")
+    @SequenceGenerator(name = "confirmation_token_id_gen", sequenceName = "confirmation_token_id_seq",
             allocationSize = 10)
+    @Column(name = "id", nullable = false, unique = true, updatable = false, columnDefinition = "BIGINT")
     private long id;
 
     @Column(name = "token", nullable = false, unique = true, updatable = false, columnDefinition = "VARCHAR(36)")

@@ -73,6 +73,10 @@ body {
     margin-top: 50px
 }
 
+#loading {
+    margin: auto;
+}
+
 .register-login-box p {
     font-family: sans-serif;
     margin: auto;
@@ -149,6 +153,13 @@ body {
 #message-info-box .activate-button {
     top: 200px;
     padding-bottom: 60px;
+}
+
+#message-info-box #loading-activation {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
+    top: 315px;
 }
 
 .form-info {
