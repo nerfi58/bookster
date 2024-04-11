@@ -21,12 +21,18 @@ public class InitializeGenres implements CommandLineRunner {
 
     public void run(String... args) {
 
-        Genre horror = new Genre();
-        horror.setGenre(GenreEnum.HORROR);
+        Genre science = new Genre();
+        science.setGenre(GenreEnum.SCIENCE);
 
         Genre thriller = new Genre();
         thriller.setGenre(GenreEnum.THRILLER);
 
-        genreRepository.saveAll(Set.of(horror, thriller));
+        Genre fantasy = new Genre();
+        fantasy.setGenre(GenreEnum.FANTASY);
+
+        Genre mystery = new Genre();
+        mystery.setGenre(GenreEnum.MYSTERY);
+
+        genreRepository.saveAll(Set.of(science, thriller, fantasy, mystery));
     }
 }

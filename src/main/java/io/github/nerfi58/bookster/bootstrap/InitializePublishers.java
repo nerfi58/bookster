@@ -6,6 +6,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
+
 @Component
 @Order(5)
 public class InitializePublishers implements CommandLineRunner {
@@ -18,9 +20,16 @@ public class InitializePublishers implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        Publisher publisher = new Publisher();
-        publisher.setName("WYDAWNICTWO POLSKIE");
 
-        publisherRepository.save(publisher);
+        Publisher pearson = new Publisher();
+        pearson.setName("Pearson");
+
+        Publisher manning = new Publisher();
+        manning.setName("Manning");
+
+        Publisher bloomsbury = new Publisher();
+        bloomsbury.setName("Bloomsbury");
+
+        publisherRepository.saveAll(Set.of(pearson, manning, bloomsbury));
     }
 }

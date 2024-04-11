@@ -20,15 +20,16 @@ public class InitializeAuthors implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        Author author1 = new Author();
-        author1.setFullName("Marek Kowalski");
 
-        Author author2 = new Author();
-        author2.setFullName("Jan Nowak");
+        Author robertCMartin = new Author();
+        robertCMartin.setFullName("Robert C. Martin");
 
-        Author author3 = new Author();
-        author3.setFullName("Aleksander Zawieja");
+        Author laurentiuSpilca = new Author();
+        laurentiuSpilca.setFullName("Laurentiu Spilca");
 
-        authorRepository.saveAll(List.of(author1, author2, author3));
+        Author jkRowling = new Author();
+        jkRowling.setFullName("J.K. Rowling");
+
+        authorRepository.saveAll(List.of(robertCMartin, laurentiuSpilca, jkRowling));
     }
 }

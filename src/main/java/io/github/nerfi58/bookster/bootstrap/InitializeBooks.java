@@ -1,6 +1,7 @@
 package io.github.nerfi58.bookster.bootstrap;
 
 import io.github.nerfi58.bookster.entities.*;
+import io.github.nerfi58.bookster.entities.enums.GenreEnum;
 import io.github.nerfi58.bookster.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.boot.CommandLineRunner;
@@ -36,41 +37,92 @@ public class InitializeBooks implements CommandLineRunner {
     @Transactional
     public void run(String... args) {
 
-        Genre horror = genreRepository.findById(1L).orElseThrow(EntityNotFoundException::new);
-        Genre thriller = genreRepository.findById(2L).orElseThrow(EntityNotFoundException::new);
+        Genre science = genreRepository.findByGenre(GenreEnum.SCIENCE).orElseThrow(EntityNotFoundException::new);
+        Genre fantasy = genreRepository.findByGenre(GenreEnum.FANTASY).orElseThrow(EntityNotFoundException::new);
+        Genre mystery = genreRepository.findByGenre(GenreEnum.MYSTERY).orElseThrow(EntityNotFoundException::new);
 
-        Author marek = authorRepository.findById(1L).orElseThrow(EntityNotFoundException::new);
-        Author jan = authorRepository.findById(2L).orElseThrow(EntityNotFoundException::new);
-        Author aleksander = authorRepository.findById(3L).orElseThrow(EntityNotFoundException::new);
+        Author robertCMartin = authorRepository.findByFullName("Robert C. Martin")
+                .stream()
+                .findFirst()
+                .orElseThrow(EntityNotFoundException::new);
 
-        Publisher publisher = publisherRepository.findById(1L).orElseThrow(EntityNotFoundException::new);
+        Author laurentiuSpilca = authorRepository.findByFullName("Laurentiu Spilca")
+                .stream()
+                .findFirst()
+                .orElseThrow(EntityNotFoundException::new);
+
+        Author jkRowling = authorRepository.findByFullName("J.K. Rowling")
+                .stream()
+                .findFirst()
+                .orElseThrow(EntityNotFoundException::new);
+
+        Publisher pearson = publisherRepository.findByName("Pearson").orElseThrow(EntityNotFoundException::new);
+        Publisher manning = publisherRepository.findByName("Manning").orElseThrow(EntityNotFoundException::new);
+        Publisher bloomsbury = publisherRepository.findByName("Bloomsbury").orElseThrow(EntityNotFoundException::new);
 
         User user = userRepository.findUserByUsername("user").orElseThrow(EntityNotFoundException::new);
-        User admin = userRepository.findUserByUsername("admin").orElseThrow(EntityNotFoundException::new);
 
-        Book book1 = new Book();
-        book1.setTitle("Pierdolenie cos tam bla bla bla");
-        book1.setAuthors(Set.of(marek));
-        book1.setPublisher(publisher);
-        book1.setGenres(Set.of(horror, thriller));
+        Book cleanCode = new Book();
+        cleanCode.setTitle("Clean Code: A Handbook of Agile Software Craftsmanship");
+        cleanCode.setAuthors(Set.of(robertCMartin));
+        cleanCode.setPublisher(pearson);
+        cleanCode.setGenres(Set.of(science));
 
-        Book book2 = new Book();
-        book2.setTitle("Jakas losowa ksiazka numer 2");
-        book2.setAuthors(Set.of(marek, jan));
-        book2.setPublisher(publisher);
-        book2.setGenres(Set.of(thriller));
+        Book springSecurityInAction = new Book();
+        springSecurityInAction.setTitle("Spring Security in Action");
+        springSecurityInAction.setAuthors(Set.of(laurentiuSpilca));
+        springSecurityInAction.setPublisher(manning);
+        springSecurityInAction.setGenres(Set.of(science));
 
-        Book book3 = new Book();
-        book3.setTitle("Beznadziejna ale jednoczesnie najlepsza ksiazka");
-        book3.setAuthors(Set.of(marek, aleksander));
-        book3.setPublisher(publisher);
-        book3.setGenres(Set.of(horror));
+        Book springSecurityInAction2 = new Book();
+        springSecurityInAction2.setTitle("Spring Security in Action, Second Edition");
+        springSecurityInAction2.setAuthors(Set.of(laurentiuSpilca));
+        springSecurityInAction2.setPublisher(manning);
+        springSecurityInAction2.setGenres(Set.of(science));
 
-        user.getBooksRead().addAll(Set.of(book1, book2, book3));
-        admin.getBooksRead().add(book3);
+        Book springStartHere = new Book();
+        springStartHere.setTitle("Spring Start Here: Learn what you need and learn it well");
+        springStartHere.setAuthors(Set.of(laurentiuSpilca));
+        springStartHere.setPublisher(manning);
+        springStartHere.setGenres(Set.of(science));
 
-        bookRepository.save(book1);
-        bookRepository.save(book2);
-        bookRepository.save(book3);
+        Book harryPotter1 = new Book();
+        harryPotter1.setTitle("Harry Potter and the Philosopher's Stone");
+        harryPotter1.setAuthors(Set.of(jkRowling));
+        harryPotter1.setPublisher(bloomsbury);
+        harryPotter1.setGenres(Set.of(fantasy, mystery));
+
+        Book harryPotter2 = new Book();
+        harryPotter2.setTitle("Harry Potter and the Chamber of Secrets");
+        harryPotter2.setAuthors(Set.of(jkRowling));
+        harryPotter2.setPublisher(bloomsbury);
+        harryPotter2.setGenres(Set.of(fantasy, mystery));
+
+        Book harryPotter3 = new Book();
+        harryPotter3.setTitle("Harry Potter and the prisoner of Azkaban");
+        harryPotter3.setAuthors(Set.of(jkRowling));
+        harryPotter3.setPublisher(bloomsbury);
+        harryPotter3.setGenres(Set.of(fantasy, mystery));
+
+        user.getBooksRead()
+                .addAll(Set.of(
+                        cleanCode,
+                        springSecurityInAction,
+                        springSecurityInAction2,
+                        springStartHere,
+                        harryPotter1,
+                        harryPotter2,
+                        harryPotter3
+                ));
+
+        bookRepository.saveAll(Set.of(
+                cleanCode,
+                springSecurityInAction,
+                springSecurityInAction2,
+                springStartHere,
+                harryPotter1,
+                harryPotter2,
+                harryPotter3
+        ));
     }
 }
