@@ -16,6 +16,7 @@ import org.springframework.security.provisioning.UserDetailsManager;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @TestConfiguration
 public class SecurityTestConfig {
@@ -40,14 +41,14 @@ public class SecurityTestConfig {
         userActive.setUsername("userActive");
         userActive.setPasshash(passwordEncoder.encode("password"));
         userActive.setActive(true);
-        userActive.setRoles(List.of(userRole));
+        userActive.setRoles(Set.of(userRole));
 
         User userNotActive = new User();
         userNotActive.setId(2);
         userNotActive.setUsername("userNotActive");
         userNotActive.setPasshash(passwordEncoder.encode("password"));
         userNotActive.setActive(false);
-        userNotActive.setRoles(List.of(userRole));
+        userNotActive.setRoles(Set.of(userRole));
 
         List<UserDetails> users = Arrays.asList(userActive, userNotActive);
 

@@ -10,6 +10,7 @@ import io.github.nerfi58.bookster.exceptions.UsernameAlreadyExistsException;
 import io.github.nerfi58.bookster.repositories.RoleRepository;
 import io.github.nerfi58.bookster.repositories.UserRepository;
 import io.github.nerfi58.bookster.services.UserService;
+import jakarta.persistence.EntityExistsException;
 import jakarta.validation.ClockProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -100,7 +101,8 @@ public class UserServiceTest {
         assertThat(savedUserDto.getEmail()).isEqualTo(userDtoToBeSaved.getEmail());
         assertThat(savedUserDto.getCreated().toString()).isEqualTo("2024-01-15");
         assertThat(savedUserDto.getRoles()).hasSize(1);
-        assertThat(savedUserDto.getRoles().getFirst()).isEqualTo("USER");
+        assertThat(savedUserDto.getRoles().stream().findFirst().orElseThrow(EntityExistsException::new)).isEqualTo(
+                "USER");
     }
 
     @Test
